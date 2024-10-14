@@ -1,8 +1,11 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const cors = require('cors');
 const app = express();
 
+// Enable CORS for all routes
+app.use(cors());
 // Define the path to the Audio folder
 const audioFolderPath = path.join(__dirname, 'audio');
 
