@@ -5,10 +5,10 @@ const app = express();
 
 
 // Define the path to the Audio folder
-const audioFolderPath = path.join(__dirname, 'Audio');
+const audioFolderPath = path.join(__dirname, 'audio');
 
 // API route to serve the MP3 file
-app.get('/Api/GuesssApi/audio/:audioName', (req, res) => {
+app.get('/Api/GuesssApi/Audio/:audioName', (req, res) => {
     const audioName = req.params.audioName;
     const audioPath = path.join(audioFolderPath, `${audioName}.mp3`);
     
