@@ -38,7 +38,7 @@ app.get('/Api/GuesssApi/Audio/:audioName', (req, res) => {
 const dataFolderPath = path.join(__dirname, 'data');
 
 // API route to return a random JSON file
-app.get('/RandomWords', (req, res) => {
+app.get('/Api/GuesssApi/RandomWords', (req, res) => {
     // Read the list of files in the data folder
     fs.readdir(dataFolderPath, (err, files) => {
         if (err) {
