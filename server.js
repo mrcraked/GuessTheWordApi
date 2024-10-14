@@ -8,7 +8,7 @@ const app = express();
 const audioFolderPath = path.join(__dirname, 'Audio');
 
 // API route to serve the MP3 file
-app.get('/Audio/:audioName', (req, res) => {
+app.get('/Api/GuesssApi/audio/:audioName', (req, res) => {
     const audioName = req.params.audioName;
     const audioPath = path.join(audioFolderPath, `${audioName}.mp3`);
     
@@ -23,7 +23,7 @@ app.get('/Audio/:audioName', (req, res) => {
 const dataFolderPath = path.join(__dirname, 'data');
 
 // API route to return a random JSON file
-app.get('/RandomWords', (req, res) => {
+app.get('/Api/GuesssApi/RandomWords', (req, res) => {
     // Read the list of files in the data folder
     fs.readdir(dataFolderPath, (err, files) => {
         if (err) {
