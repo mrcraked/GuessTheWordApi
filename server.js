@@ -38,8 +38,38 @@ app.get('/Api/GuesssApi/Audio/:audioName', (req, res) => {
 const dataFolderPath = path.join(__dirname, 'data');
 
 // API route to return a random JSON file
-app.get('/Api/GuesssApi/RandomWords', (req, res) => {
-    // ... (rest of the code remains the same)
+app.get('/RandomWords', (req, res) => {
+    // Read the list of files in the data folder
+    fs.readdir(dataFolderPath, (err, files) => {
+        if (err) {
+            return res.status(500).send('Error reading data directory');
+        }
+
+        // Filter JSON files
+        const jsonFiles = files.filter(file => path.extname(file) === '.json');
+
+        if (jsonFiles.length === 0) {
+            return res.status(404).send('No JSON files found');
+        }
+
+        // Select a random JSON file
+        const randomFile = jsonFiles[Math.floor(Math.random() * jsonFiles.length)];
+
+        // Read and send the content of the random JSON file
+        const randomFilePath = path.join(dataFolderPath, randomFile);
+        fs.readFile(randomFilePath, 'utf8', (err, data) => {
+            if (err) {
+                return res.status(500).send('Error reading JSON file');
+            }
+
+            try {
+                const jsonData = JSON.parse(data);  // Parse the JSON content
+                res.json(jsonData);  // Send the parsed JSON content as the response
+            } catch (parseError) {
+                res.status(500).send('Error parsing JSON file');
+            }
+        });
+    });
 });
 
 // Start the server
