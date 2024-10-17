@@ -5,8 +5,8 @@ const cors = require('cors');
 const app = express();
 
 const apiKeyMiddleware = (req, res, next) => {
-    const apiKey = req.headers['NoryouHost-X-SmVzc2x5bjE3MTAyMDI0QnVubnk='];
-    if (!apiKey || apiKey !== 'your-secret-api-key') {
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || apiKey !== 'NoryouHost-X-SmVzc2x5bjE3MTAyMDI0QnVubnk=') {
       return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
     }
     next();
@@ -50,8 +50,8 @@ const dataFolderPath = path.join(__dirname, 'data');
 
 // API route to return a random JSON file
 app.get('/Api/GuesssApi/RandomWords', (req, res) => {
-    const apiKey = req.headers['NoryouHost-X-SmVzc2x5bjE3MTAyMDI0QnVubnk='];
-    if (!apiKey || apiKey !== 'your-secret-api-key') {
+    const apiKey = req.headers['x-api-key'];
+    if (!apiKey || apiKey !== 'NoryouHost-X-SmVzc2x5bjE3MTAyMDI0QnVubnk=') {
       return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
     }
     // Read the list of files in the data folder
