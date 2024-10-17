@@ -4,6 +4,14 @@ const path = require('path');
 const cors = require('cors');
 const app = express();
 
+const apiKeyMiddleware = (req, res, next) => {
+    const apiKey = req.headers['NoryouHost-X-SmVzc2x5bjE3MTAyMDI0QnVubnk='];
+    if (!apiKey || apiKey !== 'your-secret-api-key') {
+      return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
+    }
+    next();
+  };
+
 // Enable CORS for all routes
 app.use(cors());
 // Define the path to the Audio folder
@@ -75,6 +83,48 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
     });
 });
 
+  
+  app.use(express.json());
+  app.use(apiKeyMiddleware);
+  
+  // GET /leaderboard
+  app.get('/Api/GuesssApi/leaderboard', (req, res) => {
+    fs.readFile('Leaderboard.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error reading leaderboard data' });
+      }
+      res.json(JSON.parse(data));
+    });
+  });
+  
+  // POST /leaderboard
+  app.post('/Api/GuesssApi/leaderboard', (req, res) => {
+    const { Name, Corects, Incorects, TimeTaken, words } = req.body;
+  
+    if (!Name || !Corects || !Incorects || !TimeTaken || !words) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+  
+    fs.readFile('Leaderboard.json', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Error reading leaderboard data' });
+      }
+  
+      const leaderboard = JSON.parse(data);
+      leaderboard.push({ Name, Corects, Incorects, TimeTaken, words });
+  
+      fs.writeFile('Leaderboard.json', JSON.stringify(leaderboard, null, 2), (err) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: 'Error writing leaderboard data' });
+        }
+        res.status(201).json({ message: 'Data added successfully' });
+      });
+    });
+  });
+  
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
