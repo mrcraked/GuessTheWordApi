@@ -3,19 +3,10 @@ const fs = require("fs");
 const path = require("path");
 const cors = require("cors");
 const app = express();
-
-const apiKeyMiddleware = (req, res, next) => {
-  const apiKey = req.headers["x-api-key"];
-  if (!apiKey || apiKey !== "NoryouHost-X-SmVzc2x5bjE3MTAyMDI0QnVubnk=") {
-    return res.status(401).json({ error: "Unauthorized: Invalid API key" });
-  }
-  next();
-};
-
-  
   // Apply CORS middleware
+app.use(cors())
 app.use(express.json());
-app.use(apiKeyMiddleware);
+
 // Enable CORS for all routes
 
 // Define the path to the Audio folder
