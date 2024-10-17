@@ -12,6 +12,8 @@ const apiKeyMiddleware = (req, res, next) => {
     next();
   };
 
+  app.use(express.json());
+  app.use(apiKeyMiddleware);
 // Enable CORS for all routes
 app.use(cors());
 // Define the path to the Audio folder
@@ -84,8 +86,7 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
 });
 
   
-  app.use(express.json());
-  app.use(apiKeyMiddleware);
+ 
   
   // GET /leaderboard
   app.get('/Api/GuesssApi/leaderboard', (req, res) => {
@@ -103,39 +104,49 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
 
 // POST route to add data to the leaderboard
 
+const ensureLeaderboardFile = () => {
+    if (!fs.existsSync(leaderboardPath)) {
+        // Create the /leaderboard directory if it doesn't exist
+        fs.mkdirSync(path.dirname(leaderboardPath), { recursive: true });
+        
+        // Initialize leaderboard.json with an empty array if it doesn't exist
+        fs.writeFileSync(leaderboardPath, '[]', 'utf8');
+        console.log('Created new leaderboard.json file.');
+    }
+};
 
-  app.post('/Api/GuesssApi/leaderboard', async (req, res) => {
-    const newEntry = req.body;  // Get the posted data
-
-    // Read the current content of the leaderboard.json file
-    fs.readFile(leaderboardPath, 'utf8', (err, data) => {
-        if (err) {
-            return res.status(500).send('Error reading the leaderboard file.');
-        }
-
-        let leaderboard = [];
-
-        try {
-            // Parse the existing leaderboard data
-            leaderboard = JSON.parse(data);
-        } catch (parseErr) {
-            return res.status(500).send('Error parsing the leaderboard data.');
-        }
-
-        // Add the new entry to the leaderboard
-        leaderboard.push(newEntry);
-
-        // Write the updated leaderboard back to the file
-        fs.writeFile(leaderboardPath, JSON.stringify(leaderboard, null, 4), (err) => {
-            if (err) {
-                return res.status(500).send('Error writing to the leaderboard file.');
+// POST route to add data to the leaderboard
+app.post('/api/guesssapi/leaderboard', (req, res) => {
+    try {
+        const leaderboardPath = path.join(__dirname, 'leaderboard/leaderboard.json');
+        
+        // Read the existing leaderboard (if it exists)
+        fs.readFile(leaderboardPath, 'utf8', (err, data) => {
+            let leaderboard = [];
+            if (!err && data) {
+                leaderboard = JSON.parse(data);
             }
 
-            // Respond to the client with a success message
-            res.status(200).send('Entry added to the leaderboard successfully.');
+            // Add the new entry
+            const newEntry = req.body;
+            leaderboard.push(newEntry);
+
+            // Write the updated leaderboard back to the file
+            fs.writeFile(leaderboardPath, JSON.stringify(leaderboard, null, 2), (writeErr) => {
+                if (writeErr) {
+                    return res.status(500).json({ message: 'Failed to write leaderboard data' });
+                }
+
+                res.status(200).json({ message: 'Entry added successfully' });
+            });
         });
-    });
-  });
+    } catch (error) {
+        console.error('Error:', error);
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+});
+
+
   
 // Start the server
 const PORT = process.env.PORT || 3000;
