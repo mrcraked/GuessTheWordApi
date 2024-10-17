@@ -20,6 +20,7 @@ const corsOptions = {
       const allowedOrigins = [
         'https://84dc45b6-fb41-4cc7-a496-071a0c358cf3-00-2hafs83uszqv7.picard.replit.dev',
         'http://localhost:3000',
+        'http://noryouhost.online'
         // Add other allowed origins here
       ];
       
