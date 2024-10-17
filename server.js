@@ -55,36 +55,34 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
       return res.status(401).json({ error: 'Unauthorized: Invalid API key' });
     }
     // Read the list of files in the data folder
-    fs.readdir(dataFolderPath, (err, files) => {
-        if (err) {
-            return res.status(500).send('Error reading data directory');
+    app.post('/leaderboard', async (req, res) => {
+        try {
+          const { Name, Corects, Incorects, TimeTaken, words } = req.body;
+      
+          if (!Name || typeof Corects !== 'number' || typeof Incorects !== 'number' || !TimeTaken || !Array.isArray(words)) {
+            return res.status(400).json({ error: 'Invalid or missing fields in the request body' });
+          }
+      
+          const newEntry = { Name, Corects, Incorects, TimeTaken, words };
+      
+          let leaderboard = [];
+          try {
+            const data = await fs.readFile('Leaderboard.json', 'utf8');
+            leaderboard = JSON.parse(data);
+          } catch (readError) {
+            // If file doesn't exist or is empty, we'll start with an empty array
+            console.log('Creating new leaderboard file');
+          }
+      
+          leaderboard.push(newEntry);
+      
+          await fs.writeFile('Leaderboard.json', JSON.stringify(leaderboard, null, 2));
+          res.status(201).json({ message: 'Data added successfully', entry: newEntry });
+        } catch (err) {
+          console.error(err);
+          res.status(500).json({ error: 'Error updating leaderboard data' });
         }
-
-        // Filter JSON files
-        const jsonFiles = files.filter(file => path.extname(file) === '.json');
-
-        if (jsonFiles.length === 0) {
-            return res.status(404).send('No JSON files found');
-        }
-
-        // Select a random JSON file
-        const randomFile = jsonFiles[Math.floor(Math.random() * jsonFiles.length)];
-
-        // Read and send the content of the random JSON file
-        const randomFilePath = path.join(dataFolderPath, randomFile);
-        fs.readFile(randomFilePath, 'utf8', (err, data) => {
-            if (err) {
-                return res.status(500).send('Error reading JSON file');
-            }
-
-            try {
-                const jsonData = JSON.parse(data);  // Parse the JSON content
-                res.json(jsonData);  // Send the parsed JSON content as the response
-            } catch (parseError) {
-                res.status(500).send('Error parsing JSON file');
-            }
-        });
-    });
+      });
 });
 
   
