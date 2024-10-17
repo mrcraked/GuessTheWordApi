@@ -103,10 +103,6 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
     try {
       const { Name, Corects, Incorects, TimeTaken, words } = req.body;
   
-      if (!Name || typeof Corects !== 'number' || typeof Incorects !== 'number' || !TimeTaken || !Array.isArray(words)) {
-        return res.status(400).json({ error: 'Invalid or missing fields in the request body' });
-      }
-  
       const newEntry = { Name, Corects, Incorects, TimeTaken, words };
   
       let leaderboard = [];
