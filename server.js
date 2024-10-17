@@ -99,29 +99,42 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
   });
   
   // POST /leaderboard
+  const leaderboardPath = path.join(__dirname, 'leaderboard', 'leaderboard.json');
+
+// POST route to add data to the leaderboard
+
+
   app.post('/Api/GuesssApi/leaderboard', async (req, res) => {
-    try {
-      const { Name, Corects, Incorects, TimeTaken, words } = req.body;
-  
-      const newEntry = { Name, Corects, Incorects, TimeTaken, words };
-  
-      let leaderboard = [];
-      try {
-        const data = await fs.readFile('Leaderboard.json', 'utf8');
-        leaderboard = JSON.parse(data);
-      } catch (readError) {
-        // If file doesn't exist or is empty, we'll start with an empty array
-        console.log('Creating new leaderboard file');
-      }
-  
-      leaderboard.push(newEntry);
-  
-      await fs.writeFile('Leaderboard.json', JSON.stringify(leaderboard, null, 2));
-      res.status(201).json({ message: 'Data added successfully', entry: newEntry });
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Error updating leaderboard data' });
-    }
+    const newEntry = req.body;  // Get the posted data
+
+    // Read the current content of the leaderboard.json file
+    fs.readFile(leaderboardPath, 'utf8', (err, data) => {
+        if (err) {
+            return res.status(500).send('Error reading the leaderboard file.');
+        }
+
+        let leaderboard = [];
+
+        try {
+            // Parse the existing leaderboard data
+            leaderboard = JSON.parse(data);
+        } catch (parseErr) {
+            return res.status(500).send('Error parsing the leaderboard data.');
+        }
+
+        // Add the new entry to the leaderboard
+        leaderboard.push(newEntry);
+
+        // Write the updated leaderboard back to the file
+        fs.writeFile(leaderboardPath, JSON.stringify(leaderboard, null, 4), (err) => {
+            if (err) {
+                return res.status(500).send('Error writing to the leaderboard file.');
+            }
+
+            // Respond to the client with a success message
+            res.status(200).send('Entry added to the leaderboard successfully.');
+        });
+    });
   });
   
 // Start the server
