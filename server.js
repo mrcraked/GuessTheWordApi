@@ -80,7 +80,11 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
 
 // GET /leaderboard
 app.get("/Api/GuesssApi/leaderboard", (req, res) => {
-  fs.readFile("Leaderboard.json", "utf8", (err, data) => {
+    const leaderboardPath = path.join(
+        __dirname,
+        "leaderboard/leaderboard.json"
+      );
+  fs.readFile(leaderboardPath, "utf8", (err, data) => {
     if (err) {
       console.error(err);
       return res.status(500).json({ error: "Error reading leaderboard data" });
