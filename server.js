@@ -99,7 +99,7 @@ app.get('/Api/GuesssApi/RandomWords', (req, res) => {
   });
   
   // POST /leaderboard
-  app.post('/leaderboard', async (req, res) => {
+  app.post('/Api/GuesssApi/leaderboard', async (req, res) => {
     try {
       const { Name, Corects, Incorects, TimeTaken, words } = req.body;
   
