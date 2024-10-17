@@ -12,36 +12,8 @@ const apiKeyMiddleware = (req, res, next) => {
   next();
 };
 
-const corsOptions = {
-    origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      
-      const allowedOrigins = [
-        'https://84dc45b6-fb41-4cc7-a496-071a0c358cf3-00-2hafs83uszqv7.picard.replit.dev',
-        'http://localhost:3000',
-        'http://noryouhost.online'
-        // Add other allowed origins here
-      ];
-      
-      if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key' , 'x-api-key'],
-    credentials: true,
-    optionsSuccessStatus: 200
-  };
   
   // Apply CORS middleware
-  app.use(cors(corsOptions));
-  
-  // Enable pre-flight requests for all routes
-  app.options('*', cors(corsOptions));
-
 app.use(express.json());
 app.use(apiKeyMiddleware);
 // Enable CORS for all routes
@@ -125,9 +97,6 @@ app.get("/Api/GuesssApi/leaderboard", (req, res) => {
     res.json(JSON.parse(data));
   });
 });
-
-
-// POST route to add data to the leaderboard
 
 // POST route to add data to the leaderboard
 app.post("/api/guesssapi/leaderboard", (req, res) => {
